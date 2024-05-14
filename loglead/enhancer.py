@@ -88,7 +88,6 @@ class EventLogEnhancer:
     def parse_drain(self, field = "e_message_normalized", drain_masking=False, reparse=False):
         self._handle_prerequisites([field])
         if reparse or "e_event_drain_id" not in self.df.columns:
-            import drain3 as dr
             # Drain returns dict
             # {'change_type': 'none',
             # 'cluster_id': 1,
@@ -99,9 +98,6 @@ class EventLogEnhancer:
 
             # We might have multiline log message, i.e. log_message + stack trace.
             # Use only first line of log message for parsing
-            current_script_path = os.path.abspath(__file__)
-            current_script_directory = os.path.dirname(current_script_path)
-            drain3_ini_location =  os.path.join(current_script_directory, '../parsers/drain3/')
             return_dtype = pl.Struct([
                 pl.Field("change_type", pl.Utf8),
                 pl.Field("cluster_id", pl.Int64),
@@ -110,8 +106,7 @@ class EventLogEnhancer:
                 pl.Field("cluster_count", pl.Int64)
             ])
             if drain_masking:
-                dr.template_miner.config_filename = os.path.join(drain3_ini_location,'drain3.ini') #TODO fix the path relative
-                tm = dr.TemplateMiner()
+                from .parsers import DrainTemplateMiner as tm
                 self.df = self.df.with_columns(
                     message_trimmed=pl.col("m_message").str.split("\n").list.first()
                 )
@@ -120,8 +115,7 @@ class EventLogEnhancer:
             else:
                 #if "e_message_normalized" not in self.df.columns:
                 #    self.normalize()
-                dr.template_miner.config_filename =os.path.join(drain3_ini_location, 'drain3_no_masking.ini') #drain3_no_masking.ini'  #TODO fix the path relative
-                tm = dr.TemplateMiner()
+                from .parsers import DrainTemplateMinerNoMasking as tm
                 self.df = self.df.with_columns(
                     drain=pl.col(field).map_elements(lambda x: tm.add_log_message(x), return_dtype=return_dtype))
 
