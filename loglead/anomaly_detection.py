@@ -131,6 +131,9 @@ class AnomalyDetection:
             # It messes up our general model prediction routine
             model_kwargs['novelty'] = True
             filter_anos = True
+        elif isinstance(model, KMeans):
+            model_kwargs.setdefault('n_init', 'auto')
+            model_kwargs.setdefault('n_clusters', 2)
 
         X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
         #Store the current the model and whether it uses ano data or no
@@ -186,9 +189,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_KMeans(self):
-        self.train_model(KMeans, n_init="auto", n_clusters=2)
-
     def train_OneClassSVM(self):
         self.train_model(OneClassSVM, max_iter=1000)
 
