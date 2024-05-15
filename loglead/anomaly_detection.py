@@ -140,9 +140,21 @@ class AnomalyDetection:
             model_kwargs.setdefault('threshold', 250)
             if filter_anos is None:
                 filter_anos = True
+        elif isinstance(model, OOV_detector):
+            model_kwargs.setdefault('threshold', 1)
+            model_kwargs['df'] = self.test_df
+            len_col = model_kwargs.setdefault('len_col', None)
+            if len_col is None:
+                if "event" in self.item_list_col:
+                    # item list col has the parser name when using events, but length doesn't
+                    model_kwargs['len_col'] = "e_event_id_len"
+                else:
+                    model_kwargs['len_col'] = self.item_list_col + "_len"
+            if filter_anos is None:
+                filter_anos = True
+
         if filter_anos is None:
             filter_anos = False
-
 
         X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
         #Store the current the model and whether it uses ano data or no
@@ -198,14 +210,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_OOVDetector(self, len_col=None, filter_anos=True, threshold=1):
-        if len_col == None: 
-            if "event" in self.item_list_col:
-                len_col = "e_event_id_len" #item list col has the parser name when using events, but length doesn't
-            else:
-                len_col = self.item_list_col+"_len"
-        self.train_model(OOV_detector, filter_anos=filter_anos, len_col=len_col, df=self.test_df, threshold=threshold)
-        
     def evaluate_all_ads(self, disabled_methods=None):
         if disabled_methods is None:
             disabled_methods = []
