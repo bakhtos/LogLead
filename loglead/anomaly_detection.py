@@ -113,6 +113,14 @@ class AnomalyDetection:
         if isinstance(model, LogisticRegression):
             model_kwargs.setdefault('max_iter', 4000)
             model_kwargs.setdefault('tol', 0.0003)
+        elif isinstance(model, LinearSVC):
+            model_kwargs.setdefault('penalty', 'l1')
+            model_kwargs.setdefault('tol', 0.1)
+            model_kwargs.setdefault('C', 1)
+            model_kwargs.setdefault('dual', False)
+            model_kwargs.setdefault('class_weight', None)
+            model_kwargs.setdefault('max_iter', 4000)
+
         self.model = model(**model_kwargs)
         self.filter_anos = filter_anos
         self.model.fit(X_train_to_use, self.labels_train)
@@ -165,10 +173,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_LSVM(self, penalty='l1', tol=0.1, C=1, dual=False, class_weight=None, max_iter=4000):
-        self.train_model(LinearSVC, penalty=penalty, tol=tol, C=C, dual=dual, class_weight=class_weight,
-                         max_iter=max_iter)
-
     def train_IsolationForest(self, n_estimators=100,  max_samples='auto', contamination="auto",filter_anos=False):
         self.train_model(IsolationForest, filter_anos=filter_anos,
                          n_estimators=n_estimators, max_samples=max_samples, contamination=contamination)
