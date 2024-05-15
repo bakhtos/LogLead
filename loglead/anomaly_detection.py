@@ -51,11 +51,12 @@ class AnomalyDetection:
         self.train_vocabulary = None
         self.auc_roc = auc_roc
 
-    def test_train_split(self, df, train_size=None, test_size=None, shuffle=True, vec_name="CountVectorizer"):
+    def test_train_split(self, df, train_size=None, test_size=None, shuffle=True, random_state=None,
+                         vec_name="CountVectorizer"):
         size = df.shape[0]
         # Shuffle the DataFrame
         if shuffle:
-            df = df.sample(n=size, shuffle=True)
+            df = df.sample(n=size, shuffle=True, seed=random_state)
         elif 'start_time' in df.columns:
             df = df.sort('start_time')
         # Do we need this or sequence based quaranteed to be in correct order?
