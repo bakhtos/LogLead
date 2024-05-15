@@ -134,6 +134,9 @@ class AnomalyDetection:
         elif isinstance(model, KMeans):
             model_kwargs.setdefault('n_init', 'auto')
             model_kwargs.setdefault('n_clusters', 2)
+        elif isinstance(model, OneClassSVM):
+            model_kwargs.setdefault('max_iter', 1000)
+
 
         X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
         #Store the current the model and whether it uses ano data or no
@@ -189,9 +192,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_OneClassSVM(self):
-        self.train_model(OneClassSVM, max_iter=1000)
-
     def train_RarityModel(self, filter_anos=True, threshold=250):
         self.train_model(RarityModel, filter_anos=filter_anos, threshold=threshold)
         
