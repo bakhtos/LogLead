@@ -107,7 +107,7 @@ class AnomalyDetection:
 
         return X, labels    
         
-    def train_model(self, model,  /, *, filter_anos=False, **model_kwargs):
+    def train_model(self, model,  /, *, filter_anos=None, **model_kwargs):
         if isinstance(model, LogisticRegression):
             model_kwargs.setdefault('max_iter', 4000)
             model_kwargs.setdefault('tol', 0.0003)
@@ -136,6 +136,12 @@ class AnomalyDetection:
             model_kwargs.setdefault('n_clusters', 2)
         elif isinstance(model, OneClassSVM):
             model_kwargs.setdefault('max_iter', 1000)
+        elif isinstance(model, RarityModel):
+            model_kwargs.setdefault('threshold', 250)
+            if filter_anos is None:
+                filter_anos = True
+        if filter_anos is None:
+            filter_anos = False
 
 
         X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
@@ -192,9 +198,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_RarityModel(self, filter_anos=True, threshold=250):
-        self.train_model(RarityModel, filter_anos=filter_anos, threshold=threshold)
-        
     def train_OOVDetector(self, len_col=None, filter_anos=True, threshold=1):
         if len_col == None: 
             if "event" in self.item_list_col:
