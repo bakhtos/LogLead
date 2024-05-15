@@ -108,8 +108,6 @@ class AnomalyDetection:
         return X, labels    
         
     def train_model(self, model,  /, *, filter_anos=False, **model_kwargs):
-        X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
-        #Store the current the model and whether it uses ano data or no
         if isinstance(model, LogisticRegression):
             model_kwargs.setdefault('max_iter', 4000)
             model_kwargs.setdefault('tol', 0.0003)
@@ -124,7 +122,18 @@ class AnomalyDetection:
             model_kwargs.setdefault('n_estimators', 100)
             model_kwargs.setdefault('max_samples', 'auto')
             model_kwargs.setdefault('contamination', 'auto')
+        elif isinstance(model, LocalOutlierFactor):
+            model_kwargs.setdefault('n_neighbors', 20)
+            model_kwargs.setdefault('max_samples', 'auto')
+            model_kwargs.setdefault('contamination', 'auto')
+            # LOF novelty=True model needs to be trained without anomalies
+            # If we set novelty=False then Predict is no longer available for calling.
+            # It messes up our general model prediction routine
+            model_kwargs['novelty'] = True
+            filter_anos = True
 
+        X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
+        #Store the current the model and whether it uses ano data or no
         self.model = model(**model_kwargs)
         self.filter_anos = filter_anos
         self.model.fit(X_train_to_use, self.labels_train)
@@ -177,12 +186,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_LOF(self, n_neighbors=20, max_samples='auto', contamination="auto", filter_anos=True):
-        #LOF novelty=True model needs to be trained without anomalies
-        #If we set novelty=False then Predict is no longer available for calling.
-        #It messes up our general model prediction routine
-        self.train_model(LocalOutlierFactor, filter_anos=filter_anos, n_neighbors=n_neighbors,  contamination=contamination, novelty=True)
-    
     def train_KMeans(self):
         self.train_model(KMeans, n_init="auto", n_clusters=2)
 
