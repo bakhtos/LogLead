@@ -108,21 +108,21 @@ class AnomalyDetection:
         return X, labels    
         
     def train_model(self, model,  /, *, filter_anos=None, **model_kwargs):
-        if isinstance(model, LogisticRegression):
+        if model is LogisticRegression:
             model_kwargs.setdefault('max_iter', 4000)
             model_kwargs.setdefault('tol', 0.0003)
-        elif isinstance(model, LinearSVC):
+        elif model is LinearSVC:
             model_kwargs.setdefault('penalty', 'l1')
             model_kwargs.setdefault('tol', 0.1)
             model_kwargs.setdefault('C', 1)
             model_kwargs.setdefault('dual', False)
             model_kwargs.setdefault('class_weight', None)
             model_kwargs.setdefault('max_iter', 4000)
-        elif isinstance(model, IsolationForest):
+        elif model is IsolationForest:
             model_kwargs.setdefault('n_estimators', 100)
             model_kwargs.setdefault('max_samples', 'auto')
             model_kwargs.setdefault('contamination', 'auto')
-        elif isinstance(model, LocalOutlierFactor):
+        elif model is LocalOutlierFactor:
             model_kwargs.setdefault('n_neighbors', 20)
             model_kwargs.setdefault('max_samples', 'auto')
             model_kwargs.setdefault('contamination', 'auto')
@@ -131,16 +131,16 @@ class AnomalyDetection:
             # It messes up our general model prediction routine
             model_kwargs['novelty'] = True
             filter_anos = True
-        elif isinstance(model, KMeans):
+        elif model is KMeans:
             model_kwargs.setdefault('n_init', 'auto')
             model_kwargs.setdefault('n_clusters', 2)
-        elif isinstance(model, OneClassSVM):
+        elif model is OneClassSVM:
             model_kwargs.setdefault('max_iter', 1000)
-        elif isinstance(model, RarityModel):
+        elif model is RarityModel:
             model_kwargs.setdefault('threshold', 250)
             if filter_anos is None:
                 filter_anos = True
-        elif isinstance(model, OOV_detector):
+        elif model is OOV_detector:
             model_kwargs.setdefault('threshold', 1)
             model_kwargs['df'] = self.test_df
             len_col = model_kwargs.setdefault('len_col', None)
