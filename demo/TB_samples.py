@@ -15,6 +15,7 @@ os.chdir(script_dir)
 sys.path.append('..')
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 
 from loglead.enhancers import EventLogEnhancer
 from loglead import AnomalyDetection
@@ -80,7 +81,7 @@ print(f"using 10% for training and 90% for testing")
 print(f"Predicting with sequence length and duration ")
 
 # Logistic Regression
-sad.train_LR()
+sad.train_model(LogisticRegression)
 df_seq = sad.predict()
 # Use Decision Tree
 sad.train_model(DecisionTreeClassifier)
@@ -91,7 +92,7 @@ sad.item_list_col = "e_words"
 sad.numeric_cols = None  # Important otherwise we use both numeric_col and item_list_col for predicting
 sad.prepare_train_test_data()  # Data needs to prepared after changing the predictor columns
 # Logistic Regression
-sad.train_LR()
+sad.train_model(LogisticRegression)
 df_seq = sad.predict()
 # Use Decision Tree
 sad.train_model(DecisionTreeClassifier)
@@ -101,7 +102,7 @@ print(f"Predicting with Drain parsing results")
 sad.item_list_col = "e_event_drain_id"
 sad.prepare_train_test_data()
 # Logistic Regression
-sad.train_LR()
+sad.train_model(LogisticRegression)
 df_seq = sad.predict()
 # Use Decision Tree
 sad.train_model(DecisionTreeClassifier)

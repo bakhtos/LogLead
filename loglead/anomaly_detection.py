@@ -110,6 +110,9 @@ class AnomalyDetection:
     def train_model(self, model,  /, *, filter_anos=False, **model_kwargs):
         X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
         #Store the current the model and whether it uses ano data or no
+        if isinstance(model, LogisticRegression):
+            model_kwargs.setdefault('max_iter', 4000)
+            model_kwargs.setdefault('tol', 0.0003)
         self.model = model(**model_kwargs)
         self.filter_anos = filter_anos
         self.model.fit(X_train_to_use, self.labels_train)
@@ -162,9 +165,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_LR(self, max_iter=4000, tol=0.0003):
-        self.train_model(LogisticRegression, max_iter=max_iter)
-    
     def train_LSVM(self, penalty='l1', tol=0.1, C=1, dual=False, class_weight=None, max_iter=4000):
         self.train_model(LinearSVC, penalty=penalty, tol=tol, C=C, dual=dual, class_weight=class_weight,
                          max_iter=max_iter)
