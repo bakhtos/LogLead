@@ -31,6 +31,8 @@ __all__ = ['AnomalyDetection']
 class AnomalyDetection:
     def __init__(self, item_list_col=None, numeric_cols=None, emb_list_col=None, label_col="anomaly", 
                  store_scores=False, print_scores=True, auc_roc=False):
+        self.model = None
+        self.filter_anos = None
         self.item_list_col = item_list_col
         self.numeric_cols = numeric_cols if numeric_cols else []
         self.label_col = label_col
@@ -107,7 +109,7 @@ class AnomalyDetection:
 
         return X, labels    
         
-    def train_model(self, model,  /, *, filter_anos=None, **model_kwargs):
+    def init_model(self, model, /, *, filter_anos=None, **model_kwargs):
         if model is LogisticRegression:
             model_kwargs.setdefault('max_iter', 4000)
             model_kwargs.setdefault('tol', 0.0003)
@@ -156,21 +158,26 @@ class AnomalyDetection:
         if filter_anos is None:
             filter_anos = False
 
-        X_train_to_use = self.X_train_no_anos if filter_anos else self.X_train
-        #Store the current the model and whether it uses ano data or no
         self.model = model(**model_kwargs)
         self.filter_anos = filter_anos
-        self.model.fit(X_train_to_use, self.labels_train)
+
+    def fit(self, X=None, y=None, **kwargs):
+        if X is None:
+            X = self.X_train_no_anos if self.filter_anos else self.X_train
+        if y is None:
+            y = self.labels_train
+        self.model.fit(X, y, **kwargs)
 
     #def dep_train_model(self, df_seq, model):
     #    X_train, labels = self._prepare_data(train=True, df_seq=df_seq)
     #    self.model = model
     #    self.model.fit(X_train, labels)
     
-    def predict(self, custom_plot=False):
+    def predict(self, X=None, custom_plot=False):
         #Binary scores
-        X_test_to_use = self.X_test_no_anos if self.filter_anos else self.X_test
-        predictions = self.model.predict(X_test_to_use)
+        if X is None:
+            X = self.X_test_no_anos if self.filter_anos else self.X_test
+        predictions = self.model.predict(X)
         #Unsupervised modeles give predictions between -1 and 1. Convert to 0 and 1
         if isinstance(self.model, (IsolationForest, LocalOutlierFactor,KMeans, OneClassSVM)):
             predictions = np.where(predictions < 0, 1, 0)
@@ -181,10 +188,10 @@ class AnomalyDetection:
         if self.auc_roc:
             if isinstance(self.model, (IsolationForest, LocalOutlierFactor, OneClassSVM)):
                 # Unsupervised models give anomaly scores or decision function values
-                predictions_proba = 1- self.model.decision_function(X_test_to_use)
+                predictions_proba = 1- self.model.decision_function(X)
             elif isinstance(self.model, (KMeans)):
                 from sklearn.metrics.pairwise import pairwise_distances
-                predictions_proba = np.min(pairwise_distances(X_test_to_use, self.model.cluster_centers_), axis=1)
+                predictions_proba = np.min(pairwise_distances(X, self.model.cluster_centers_), axis=1)
             elif isinstance(self.model, LinearSVC):
                 # LinearSVC does not have predict_proba method by default
                 # Use decision_function method to obtain confidence scores
@@ -193,12 +200,12 @@ class AnomalyDetection:
                 X_train_to_use = self.X_train_no_anos if  self.filter_anos else self.X_train
                 calibrated_model = CalibratedClassifierCV(self.model, cv='prefit')
                 calibrated_model.fit(X_train_to_use, self.labels_train)
-                predictions_proba = calibrated_model.predict_proba(X_test_to_use)[:, 1]
+                predictions_proba = calibrated_model.predict_proba(X)[:, 1]
             elif isinstance(self.model, (OOV_detector, RarityModel)):
                 predictions_proba = self.model.scores    
             else:
                 # Supervised models give probabilities using predict_proba method
-                predictions_proba = self.model.predict_proba(X_test_to_use)[:, 1]
+                predictions_proba = self.model.predict_proba(X)[:, 1]
             df_seq = self.test_df.with_columns(pl.Series(name="pred_ano_proba", values=predictions_proba.tolist()))      
 
         if self.print_scores:

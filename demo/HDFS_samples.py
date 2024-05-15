@@ -114,10 +114,12 @@ sad.test_train_split(seq_enhancer.df_seq, test_frac=0.90)
 print(f"using 10% for training and 90% for testing")
 
 # Logistic Regression
-sad.train_model(LogisticRegression)
+sad.init_model(LogisticRegression)
+sad.fit()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_model(DecisionTreeClassifier)
+sad.init_model(DecisionTreeClassifier)
+sad.fit()
 df_seq = sad.predict()
 
 print(f"Predicting with words")
@@ -125,20 +127,24 @@ sad.item_list_col = "e_words"
 sad.numeric_cols = None  # Important otherwise we use both numeric_col and item_list_col for predicting
 sad.prepare_train_test_data()  # Data needs to prepared after changing the predictor columns
 # Logistic Regression
-sad.train_model(LogisticRegression)
+sad.init_model(LogisticRegression)
+sad.fit()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_model(DecisionTreeClassifier)
+sad.init_model(DecisionTreeClassifier)
+sad.fit()
 df_seq = sad.predict()
 
 print(f"Predicting with PL-Iplom parsing results")
 sad.item_list_col = "e_event_pliplom_id"
 sad.prepare_train_test_data()
 # Logistic Regression
-sad.train_model(LogisticRegression)
+sad.init_model(LogisticRegression)
+sad.fit()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_model(DecisionTreeClassifier)
+sad.init_model(DecisionTreeClassifier)
+sad.fit()
 df_seq = sad.predict()
 
 # ____________________________________________________________
