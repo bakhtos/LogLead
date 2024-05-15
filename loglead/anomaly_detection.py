@@ -9,14 +9,12 @@ import matplotlib.pyplot as plt
 # from sklearnex import patch_sklearn
 #patch_sklearn()
 from scipy.sparse import hstack
-from xgboost import XGBClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.cluster import KMeans
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import OneClassSVM
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
@@ -167,9 +165,6 @@ class AnomalyDetection:
     def train_LR(self, max_iter=4000, tol=0.0003):
         self.train_model(LogisticRegression, max_iter=max_iter)
     
-    def train_DT(self):
-        self.train_model(DecisionTreeClassifier)
-
     def train_LSVM(self, penalty='l1', tol=0.1, C=1, dual=False, class_weight=None, max_iter=4000):
         self.train_model(LinearSVC, penalty=penalty, tol=tol, C=C, dual=dual, class_weight=class_weight,
                          max_iter=max_iter)
@@ -189,12 +184,6 @@ class AnomalyDetection:
 
     def train_OneClassSVM(self):
         self.train_model(OneClassSVM, max_iter=1000)
-
-    def train_RF(self):
-        self.train_model(RandomForestClassifier)
-
-    def train_XGB(self):
-        self.train_model(XGBClassifier)
 
     def train_RarityModel(self, filter_anos=True, threshold=250):
         self.train_model(RarityModel, filter_anos=filter_anos, threshold=threshold)

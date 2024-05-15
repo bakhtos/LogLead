@@ -14,6 +14,8 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_dir)
 sys.path.append('..')
 
+from sklearn.tree import DecisionTreeClassifier
+
 from loglead.enhancers import EventLogEnhancer
 from loglead import AnomalyDetection
 
@@ -81,7 +83,7 @@ print(f"Predicting with sequence length and duration ")
 sad.train_LR()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_DT()
+sad.train_model(DecisionTreeClassifier)
 df_seq = sad.predict()
 
 print(f"Predicting with words")
@@ -92,7 +94,7 @@ sad.prepare_train_test_data()  # Data needs to prepared after changing the predi
 sad.train_LR()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_DT()
+sad.train_model(DecisionTreeClassifier)
 df_seq = sad.predict()
 
 print(f"Predicting with Drain parsing results")
@@ -102,7 +104,7 @@ sad.prepare_train_test_data()
 sad.train_LR()
 df_seq = sad.predict()
 # Use Decision Tree
-sad.train_DT()
+sad.train_model(DecisionTreeClassifier)
 df_seq = sad.predict()
 
 # ____________________________________________________________
