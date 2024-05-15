@@ -31,6 +31,14 @@ __all__ = ['AnomalyDetection']
 class AnomalyDetection:
     def __init__(self, item_list_col=None, numeric_cols=None, emb_list_col=None, label_col="anomaly", 
                  store_scores=False, print_scores=True, auc_roc=False):
+        self.X_train = None
+        self.labels_train = None
+        self.X_train_no_anos = None
+        self.labels_train_no_anos = None
+        self.X_test = None
+        self.labels_test = None
+        self.X_test_no_anos = None
+        self.labels_test_no_anos = None
         self.model = None
         self.filter_anos = None
         self.item_list_col = item_list_col
@@ -71,11 +79,11 @@ class AnomalyDetection:
         self.prepare_train_test_data(vec_name=vec_name)
         
     def prepare_train_test_data(self, vec_name="CountVectorizer"):
-        #Prepare all data for running
+        # Prepare all data for running
         self.X_train, self.labels_train = self._prepare_data(True, self.train_df, vec_name)
         self.X_test, self.labels_test = self._prepare_data(False, self.test_df,vec_name)
-        #No anomalies dataset is used for some unsupervised algos. 
-        self.X_train_no_anos, _ = self._prepare_data(True, self.train_df.filter(pl.col(self.label_col).not_()), vec_name)
+        # No anomalies dataset is used for some unsupervised algos.
+        self.X_train_no_anos, self.labels_train_no_anos = self._prepare_data(True,self.train_df.filter(pl.col(self.label_col).not_()), vec_name)
         self.X_test_no_anos, self.labels_test_no_anos = self._prepare_data(False, self.test_df, vec_name)
      
     def _prepare_data(self, train, df_seq, vec_name):
