@@ -120,6 +120,10 @@ class AnomalyDetection:
             model_kwargs.setdefault('dual', False)
             model_kwargs.setdefault('class_weight', None)
             model_kwargs.setdefault('max_iter', 4000)
+        elif isinstance(model, IsolationForest):
+            model_kwargs.setdefault('n_estimators', 100)
+            model_kwargs.setdefault('max_samples', 'auto')
+            model_kwargs.setdefault('contamination', 'auto')
 
         self.model = model(**model_kwargs)
         self.filter_anos = filter_anos
@@ -173,10 +177,6 @@ class AnomalyDetection:
                                             self.item_list_col, self.numeric_cols, self.emb_list_col)
         return df_seq 
        
-    def train_IsolationForest(self, n_estimators=100,  max_samples='auto', contamination="auto",filter_anos=False):
-        self.train_model(IsolationForest, filter_anos=filter_anos,
-                         n_estimators=n_estimators, max_samples=max_samples, contamination=contamination)
-                          
     def train_LOF(self, n_neighbors=20, max_samples='auto', contamination="auto", filter_anos=True):
         #LOF novelty=True model needs to be trained without anomalies
         #If we set novelty=False then Predict is no longer available for calling.
