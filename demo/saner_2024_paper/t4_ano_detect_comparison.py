@@ -59,7 +59,7 @@ sad = AnomalyDetection(store_scores=True, print_scores=False)
 for i in range(10):
     print(f"{i}", end="")
     sad.item_list_col = "e_words"
-    sad.test_train_split(seq_enhancer.df_seq, test_frac=0.95)
+    sad.test_train_split(seq_enhancer.df_seq, test_size=0.95)
     sad.evaluate_all_ads(disabled_methods=disable)
     print(".", end="")
     

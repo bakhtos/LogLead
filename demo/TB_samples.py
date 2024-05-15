@@ -76,7 +76,7 @@ numeric_cols = ["e_chars_len",  "e_lines_len",]
 sad = AnomalyDetection()
 # Using 10% for training 90% for testing
 sad.numeric_cols = numeric_cols
-sad.test_train_split(df, test_frac=0.90)
+sad.test_train_split(df, test_size=0.90)
 print(f"using 10% for training and 90% for testing")
 print(f"Predicting with sequence length and duration ")
 
@@ -122,7 +122,7 @@ print(f"We run everything two times - Adjust as needed")
 sad = AnomalyDetection(store_scores=True, print_scores=False)
 for i in range(2):  # We do just two loops in this demo
     sad.item_list_col = "e_words"
-    sad.test_train_split(df, test_frac=0.90)
+    sad.test_train_split(df, test_size=0.90)
     sad.evaluate_all_ads()
     
     # We keep existing split but need to prepare data for trigram data

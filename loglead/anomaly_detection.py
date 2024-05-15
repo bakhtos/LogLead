@@ -43,21 +43,31 @@ class AnomalyDetection:
         self.train_vocabulary = None
         self.auc_roc = auc_roc
 
-    def test_train_split(self, df, test_frac=0.9, shuffle=True,vec_name="CountVectorizer"):
+    def test_train_split(self, df, train_size=None, test_size=None, shuffle=True, vec_name="CountVectorizer"):
+        size = df.shape[0]
         # Shuffle the DataFrame
         if shuffle:
-            df = df.sample(fraction = 1.0, shuffle=True)
+            df = df.sample(n=size, shuffle=True)
         elif 'start_time' in df.columns:
             df = df.sort('start_time')
-        #Do we need this or sequence based quaranteed to be in correct order
+        # Do we need this or sequence based quaranteed to be in correct order?
         elif "m_timestamp" in df.columns:
-            df = df.sort('m_timestamp')   
+            df = df.sort('m_timestamp')
+
+        if train_size is None and test_size is None:
+            raise ValueError('Specify train_size or test_size.')
+        if train_size is not None and test_size is not None:
+            raise ValueError('Both train_size and test_size specified.')
         # Split ratio
-        test_size = int(test_frac * df.shape[0])
+        if isinstance(test_size, float):
+            test_size = int(test_size * size)
+        if isinstance(train_size, float):
+            train_size = int(train_size * size)
+            test_size = size - train_size
 
         # Split the DataFrame using head and tail
-        self.train_df = df.head(-test_size) #Returns all rows expect last abs(-test_size)
-        self.test_df = df.tail(test_size) #Returns the last test_size rows
+        self.train_df = df.head(-test_size)  # Returns all rows expect last abs(-test_size)
+        self.test_df = df.tail(test_size)  # Returns the last test_size rows
         self.prepare_train_test_data(vec_name=vec_name)
         
     def prepare_train_test_data(self, vec_name="CountVectorizer"):

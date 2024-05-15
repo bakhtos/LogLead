@@ -46,7 +46,7 @@ for dataset in datasets:
         df["anomaly"].sum() > 10):
             print(f"Running event anomaly detectors with {col}")
             sad = AnomalyDetection(item_list_col=col, print_scores= False, store_scores=True)
-            sad.test_train_split (df, test_frac=0.5) 
+            sad.test_train_split (df, test_size=0.5)
             sad.evaluate_all_ads(disabled_methods=disabled_methods)
 
 
@@ -67,7 +67,7 @@ for dataset in datasets:
                 print(f"Running seqeuence anomaly detectors with {col}")
                 sad =  AnomalyDetection(item_list_col=col, print_scores= False, store_scores=True)
                 #High training fraction to ensure we always have suffiecient samples as these are reduced dataframes 
-                sad.test_train_split (df_seq, test_frac=0.2) 
+                sad.test_train_split (df_seq, test_size=0.2)
                 sad.evaluate_all_ads(disabled_methods=disabled_methods)
         print(f"Running seqeuence anomaly detectors with numeric columns {numeric_cols}")
         if (col in df_seq.columns and 
@@ -76,7 +76,7 @@ for dataset in datasets:
         df_seq["anomaly"].sum() > 10):
             sad = AnomalyDetection(numeric_cols = numeric_cols, print_scores= False, store_scores=True)
             #High training fraction to ensure we always have suffiecient samples as these are reduced dataframes 
-            sad.test_train_split (df_seq, test_frac=0.2) 
+            sad.test_train_split (df_seq, test_size=0.2)
             sad.evaluate_all_ads(disabled_methods=[])        
 
 print("Anomaly detectors test complete.")

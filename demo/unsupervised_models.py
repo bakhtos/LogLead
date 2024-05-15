@@ -85,7 +85,7 @@ for item in items:
 
     stime = time.time()
     seq_enhancer.sort_start_time()
-    sad.test_train_split(seq_enhancer.df_seq, test_frac=test_frac)
+    sad.test_train_split(seq_enhancer.df_seq, test_size=test_frac)
     print("time split and prepare:", time.time()-stime)
 
     sad.evaluate_with_params(models_dict)
@@ -126,7 +126,7 @@ for item in items:
     print("-----", item, "-----")
     sad.item_list_col = item
     stime = time.time()
-    sad.test_train_split(df, test_frac=test_frac)
+    sad.test_train_split(df, test_size=test_frac)
     print("time split and prepare:", time.time()-stime)
     sad.evaluate_with_params(models_dict)
 
@@ -176,7 +176,7 @@ for item in items:
     sad.item_list_col = item
 
     stime = time.time()
-    sad.test_train_split(seq_enhancer.df_seq, test_frac=test_frac)
+    sad.test_train_split(seq_enhancer.df_seq, test_size=test_frac)
     print("time split and prepare:", time.time()-stime)
     sad.evaluate_with_params(models_dict)
 
@@ -219,7 +219,7 @@ for item in items:
     sad.item_list_col = item
     
     stime = time.time()
-    sad.test_train_split(df, test_frac=test_frac)
+    sad.test_train_split(df, test_size=test_frac)
     print("time split and prepare:", time.time()-stime)
     
     sad.evaluate_with_params(models_dict)

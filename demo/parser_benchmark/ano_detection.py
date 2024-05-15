@@ -189,7 +189,7 @@ for dataset_name, dataset_info in config['datasets'].items():
                     print(f"Parser:{parser_name}", end=" ")
                     sad.item_list_col = parser_field
                     if first:
-                        sad.test_train_split(df_to_predict, test_frac=tf, shuffle=not data_chrono_order)
+                        sad.test_train_split(df_to_predict, test_size=tf, shuffle=not data_chrono_order)
                         first = False
                     else:  # We keep the existing split but prepare a new parserfield
                         sad.prepare_train_test_data()

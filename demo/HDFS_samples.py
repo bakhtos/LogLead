@@ -110,7 +110,7 @@ numeric_cols = ["seq_len",  "duration_sec",]
 sad = AnomalyDetection(auc_roc=True)
 # Using 10% for training 90% for testing
 sad.numeric_cols = numeric_cols
-sad.test_train_split(seq_enhancer.df_seq, test_frac=0.90)
+sad.test_train_split(seq_enhancer.df_seq, test_size=0.90)
 print(f"using 10% for training and 90% for testing")
 
 # Logistic Regression
@@ -155,7 +155,7 @@ print(f"We run everything two times - Adjust as needed")
 sad = AnomalyDetection(store_scores=True, print_scores=False, auc_roc=True)
 for i in range(3):  # We do just three loops in this demo
     sad.item_list_col = "e_words"
-    sad.test_train_split(seq_enhancer.df_seq, test_frac=0.90)
+    sad.test_train_split(seq_enhancer.df_seq, test_size=0.90)
     sad.evaluate_all_ads()
     
     # We keep existing split but need to prepare everything with trigrams
